@@ -33,7 +33,7 @@ def crawler(start, end):
 	page = start
 	n = end-start+1
 	article_id = 0;
-
+	k = 0;
 	for i in range(n):
 		print('Page(Index): ' + str(i))
 		fetchURL = URL + str(page) + '.html'
@@ -41,6 +41,8 @@ def crawler(start, end):
 		res = requests.get(url=fetchURL,cookies=COOKIE)
 		soup = BeautifulSoup(res.text)
 		for tag in soup.find_all('div','r-ent'):
+			if k==1: break
+
 			try:
 				link = str(tag.find_all('a'))
 				link = link.split("\"")
@@ -48,6 +50,7 @@ def crawler(start, end):
 				parseArticle(link, article_id)
 				article_id += 1
 				sleep(0.5)
+				#k = 1
 			except:
 				print("Fetch Error at Page " + str(page) + ' with Article ' + str(article_id))
 				pass
@@ -58,6 +61,7 @@ def crawler(start, end):
 def parseArticle(link, id):
 	res = requests.get(url=str(link), cookies=COOKIE)
 	soup = BeautifulSoup(res.text)
+	
 
 	# 抓取時間
 	st = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -66,6 +70,16 @@ def parseArticle(link, id):
 	author = soup.find(id='main-container').contents[1].contents[0].contents[1].string.replace(' ','')
 	title = soup.find(id='main-container').contents[1].contents[2].contents[1].string.replace(' ','')
 	date = soup.find(id='main-container').contents[1].contents[3].contents[1].string
+
+	# 換日期 
+	# date = 'Thu May 14 21:56:01 2015'
+	#          0   1   2     3      4
+	a = [t(s) for t,s in zip((str,str,int,str,int),date.split())]
+	monthDic = {'Jan':1, 'Feb':2, 'Mar':3, 'Apr':4, 'May':5, 'Jun':6, 'Jul':7, 'Aug':8, 'Sep':9,
+	            'Oct':10, 'Nov':11, 'Dec':12}
+	date = str(a[4]) + '-' + str(monthDic[a[1]]) + '-' + str(a[2]) + ' ' + str(a[3])
+
+
 
 	# 判斷發文/回文
 	if str(title).startswith('Re:'):
@@ -85,9 +99,16 @@ def parseArticle(link, id):
 	a = str(soup.find(id='main-container').contents[1])
 	a = a.split('</div>')
 	a = a[4].split("<span class=\"f2\">※ 發信站: 批踢踢實業坊(ptt.cc),")
-	content = a[0].replace(' ', '').replace('\n', '').replace('\t', '')
-	content = BeautifulSoup(content)
+	content = BeautifulSoup(a[0])
 	content = content.text
+
+	# 簽名檔
+	t = content.split("--")
+	if len(t) >= 3:
+		signature = str(t[1])
+	else:
+		signature = 'No'
+
 
 	# 文章網址
 	try:
@@ -115,7 +136,8 @@ def parseArticle(link, id):
 			n += 1			
 	messageNum = {"2_推":g,"3_噓":b,"4_箭頭":n,"1_全部":num}
 	'''
-	d={ "1_ID":id ,"2_作者":author ,"3_標題":title ,"4_日期":date ,"5_ip":ip ,"6_內文":content ,"7_文章網址":articleSite, "8_發文/回文":reply, "9_TimeStamp":st}
+
+	d = { "ID":id ,"作者":author ,"標題":title ,"日期":date ,"ip":ip ,"內文":content ,"文章網址":articleSite, "發文/回文":reply, "TimeStamp":st, "簽名檔":signature}
 	json_data = json.dumps(d,ensure_ascii=False,indent=4,sort_keys=True)+','
 	print("Fetch " + str(articleID) + " Finish ...")
 	store(json_data) 
