@@ -35,7 +35,7 @@ def create_articles_from_file(filename):
 def main():
     articles = create_articles_from_file('data.json')
     for a in articles:
-        print a.title
+        print(a.title)
 
 if __name__ == '__main__':
     main()
