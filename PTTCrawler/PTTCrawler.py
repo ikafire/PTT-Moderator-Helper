@@ -28,6 +28,15 @@ import datetime
 URL = 'http://www.ptt.cc/bbs/Gossiping/index'
 COOKIE = {'over18': '1'}
 
+
+def getPageNum():
+	fetchURL = URL + '.html'
+	res = requests.get(url=fetchURL, cookies=COOKIE)
+	indexPage = BeautifulSoup(res.text)
+	pageNum = int(re.sub(r'[^0-9]+', '', indexPage.find_all("a", class_="btn wide")[1].get('href')))
+
+	print(pageNum)
+
 def crawler(start, end):
 	
 	page = start
@@ -38,7 +47,7 @@ def crawler(start, end):
 		print('Page(Index): ' + str(i))
 		fetchURL = URL + str(page) + '.html'
 
-		res = requests.get(url=fetchURL,cookies=COOKIE)
+		res = requests.get(url=fetchURL, cookies=COOKIE)
 		soup = BeautifulSoup(res.text)
 		for tag in soup.find_all('div','r-ent'):
 			if k==1: break
@@ -137,16 +146,32 @@ def parseArticle(link, id):
 	messageNum = {"2_推":g,"3_噓":b,"4_箭頭":n,"1_全部":num}
 	'''
 
-	d = { "ID":id ,"作者":author ,"標題":title ,"日期":date ,"ip":ip ,"內文":content ,"文章網址":articleSite, "發文/回文":reply, "TimeStamp":st, "簽名檔":signature}
+	d = { "ID":id ,"作者":author ,"標題":title ,"日期":date ,"ip":ip ,"內文":content ,"文章網址":articleSite, "發文/回文":reply, "TimeStamp":st, "簽名檔":signature, "文章ID":articleID}
 	json_data = json.dumps(d,ensure_ascii=False,indent=4,sort_keys=True)+','
 	print("Fetch " + str(articleID) + " Finish ...")
 	store(json_data) 
 	
-def store(data):
+def store(data):d
     with open('data.json', 'a') as f:
         f.write(data)
 
+
+
+############################################
+#										   #
+# MongoDB Function                         #
+#                                          #
+############################################
+
+
+
+
+
 if __name__ == '__main__':
+	
+	# 回傳現在有幾頁，越新數字越大 7560 -> 7561, 該數字+1為最新之頁數
+	pageNum = getPageNum()
+	
 	store('[') 
 	crawler(int(sys.argv[1]),int(sys.argv[2]))
 	store(']') 
@@ -154,5 +179,6 @@ if __name__ == '__main__':
 		p = f.read()
 	with open('data.json', 'w') as f:
 		f.write(p.replace(',]',']'))
+	
 
 
