@@ -13,8 +13,9 @@ class Article:
             tag = ''
         return tag
 
+
 def create_articles_from_file(filename):
-    f = open(filename, 'r')
+    f = open(filename, 'r', -1, 'utf-8')
     import json
     j = json.load(f)
     articles = []
