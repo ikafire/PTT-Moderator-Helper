@@ -6,7 +6,7 @@ class Article:
 
     def get_tag(self):
         start = self.title.find(u'[')
-        end = self.title.find(u'[', start)
+        end = self.title.find(u']', start)
         if start >= 0 and end >= 0:
             tag = self.title[(start + 1):end]
         else:
@@ -22,6 +22,8 @@ def create_articles_from_file(filename):
         article = Article()
         article.id = entry[u'ID']
         article.author = entry[u'作者']
+        if article.author.find('(') > 0:
+            article.author = article.author[0 : article.author.find('(')]
         article.title = entry[u'標題']
         article.date = entry[u'日期']
         article.ip = entry[u'ip']
@@ -46,7 +48,7 @@ def main():
         print(u'發回文: {0}'.format(a.type))
         print(u'Timestamp: {0}'.format(a.timestamp))
         print(u'簽名檔: {0}'.format(a.signature))
-        
+
 
 if __name__ == '__main__':
     main()
