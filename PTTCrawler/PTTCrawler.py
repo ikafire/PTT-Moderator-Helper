@@ -3,22 +3,27 @@
 # PTT Crawler             		    Lion Kuo #
 # ------------------------------------------ #
 # Before you use ...                         #
-#   1). Python2 or Python3                   #
+#   1). Python3                              #
 #   2). BeautifulSoup 4                      #
 #   3). requests                             #
 #                                            #
 # Usage ...                                  #
 # ------------------------------------------ #
 #                                            #
+#   python3 PTTCrawler.py                    #
 #                                            #
 #                                            #
+#   Check the LastPage file, if not exists   #
+#   Do the first fetch from the newest page  #
+#   to the old page in 10.                   #
+#   If it exists, fetch the range from       #
+#   LastPage to newestPage.                  #
 #                                            #
-#                                            #
-#                                            #
-#                                            #
+##############################################
 
 from bs4 import BeautifulSoup
 from time import sleep,time
+import os.path
 import re
 import json
 import requests
@@ -35,7 +40,7 @@ def getPageNum():
 	indexPage = BeautifulSoup(res.text)
 	pageNum = int(re.sub(r'[^0-9]+', '', indexPage.find_all("a", class_="btn wide")[1].get('href')))
 
-	print(pageNum)
+	return pageNum
 
 def crawler(start, end):
 	
@@ -44,7 +49,7 @@ def crawler(start, end):
 	article_id = 0;
 	k = 0;
 	for i in range(n):
-		print('Page(Index): ' + str(i))
+		print('Page(Index): ' + str(page))
 		fetchURL = URL + str(page) + '.html'
 
 		res = requests.get(url=fetchURL, cookies=COOKIE)
@@ -151,34 +156,44 @@ def parseArticle(link, id):
 	print("Fetch " + str(articleID) + " Finish ...")
 	store(json_data) 
 	
-def store(data):d
+def store(data):
     with open('data.json', 'a') as f:
         f.write(data)
 
+def writePageNum(nowPageNum):
+	with open('LastPage','w+') as f:
+		f.write(str(nowPageNum))
 
-
-############################################
-#										   #
-# MongoDB Function                         #
-#                                          #
-############################################
-
-
-
-
+def readPageNum():
+	with open('LastPage','r') as f:
+		k = int(f.read())
+	return k
 
 if __name__ == '__main__':
 	
 	# 回傳現在有幾頁，越新數字越大 7560 -> 7561, 該數字+1為最新之頁數
-	pageNum = getPageNum()
+	nowPageNum = getPageNum()
 	
-	store('[') 
-	crawler(int(sys.argv[1]),int(sys.argv[2]))
-	store(']') 
-	with open('data.json', 'r') as f:
-		p = f.read()
-	with open('data.json', 'w') as f:
-		f.write(p.replace(',]',']'))
-	
+	if os.path.exists("./LastPage") is True :   
+		last = readPageNum()
+		if last != (nowPageNum+1):
+			store('[') 
+			crawler(last,nowPageNum+1)
+			store(']') 
+			with open('data.json', 'r') as f:
+				p = f.read()
+			with open('data.json', 'w') as f:
+				f.write(p.replace(',]',']'))
+			writePageNum(nowPageNum+1)
+	else:
+		store('[') 
+		crawler(nowPageNum-10,nowPageNum+1)
+		store(']') 
+		with open('data.json', 'r') as f:
+			p = f.read()
+		with open('data.json', 'w') as f:
+			f.write(p.replace(',]',']'))
+		writePageNum(nowPageNum+1)
+
 
 
