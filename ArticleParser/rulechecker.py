@@ -46,16 +46,18 @@ def main():
     import article
     articles = article.create_articles_from_file('data.json')
     for a in articles:
-        violated, sentence = rule_6(a)
+        violated6, sentence6 = rule_6(a)
+        violated9, sentence9 = rule_9(a)
+        violated = violated6 or violated9
         if violated:
             print(a.title)
             print(a.body)
-            print(sentence)
-        violated, sentence = rule_9(a)
+        if violated6:
+            print(sentence6)
+        if violated9:
+            print(sentence9)
         if violated:
-            print(a.title)
-            print(a.body)
-            print(sentence)
+            print("==================")
 
 
 if __name__ == '__main__':
