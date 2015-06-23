@@ -2,7 +2,9 @@
 import article
 import jieba
 import jieba.analyse
+import json
 
+from naiveBayesClassifier.trainedData import TrainedData
 from naiveBayesClassifier import tokenizer
 from naiveBayesClassifier.trainer import Trainer
 from naiveBayesClassifier.classifier import Classifier
@@ -35,10 +37,24 @@ class NaiveBayesClassifier:
             seg_list = jieba.analyse.extract_tags(doc)
             doc = " ".join(seg_list)
             self.articleTrainer.train(doc, 'gossiping')
+        f = open('data/docCountOfClasses.json', 'w', -1, 'utf-8')
+        f.write(json.dumps(self.articleTrainer.data.docCountOfClasses))
+        f.close()
+        f = open('data/frequencies.json', 'w', -1, 'utf-8')
+        f.write(json.dumps(self.articleTrainer.data.frequencies))
+        f.close()
+        
 
     def classify(self, article):
+        self.data = TrainedData()
+        f = open('data/docCountOfClasses.json', 'r', -1, 'utf-8')
+        self.data.docCountOfClasses = json.load(f)
+        f.close()
+        f = open('data/frequencies.json', 'r', -1, 'utf-8')
+        self.data.frequencies = json.load(f)
+        f.close()
         #Testing
-        self.articleClassifier = Classifier(self.articleTrainer.data, tokenizer)
+        self.articleClassifier = Classifier(self.data, tokenizer)
         doc = article.body
         #seg_list = jieba.lcut(doc, cut_all=False)
         seg_list = jieba.analyse.extract_tags(doc)

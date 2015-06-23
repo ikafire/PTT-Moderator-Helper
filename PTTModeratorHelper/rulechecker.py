@@ -2,6 +2,7 @@
 import article
 import count
 import title_parse as title
+from NBC import NaiveBayesClassifier
 
 def rule_1(article, users_dict):
     sentence = "版規一: \n"
@@ -46,6 +47,16 @@ def rule_1(article, users_dict):
         else:
             sentence += "每日發文額度超貼 " + users_dict[author][0]-5 + " 篇, 給予水桶 " + users_dict[author][0]-5 + " 個月。\n"
             violated = True
+    return violated, sentence
+
+def rule_4(article):
+    sentence = "版規四: \n"
+    violated = False
+
+    classifier = NaiveBayesClassifier()
+    if classifier.classify(article) == 'politics':
+        sentence += "政治問卦。水桶三個月。\n"
+        violated = True
     return violated, sentence
 
 def rule_6(article):
@@ -102,14 +113,17 @@ def checkRules():
         title.check_date(a, prev_date, users_dict)
         title.check_author(a, users_dict)
         violated1, sentence1 = rule_1(a, users_dict)
+        violated4, sentence4 = rule_4(a)
         violated6, sentence6 = rule_6(a)
         violated9, sentence9 = rule_9(a, users_dict)
-        violated = violated1 or violated6 or violated9
+        violated = violated1 or violated4 or violated6 or violated9
         subResult = ""
         if violated:
             subResult += a.title + "\n"
         if violated1:
             subResult += sentence1 +"\n"
+        if violated4:
+            subResult += sentence4 +"\n"
         if violated6:
             subResult += sentence6 + "\n"
         if violated9:
