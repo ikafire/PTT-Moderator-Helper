@@ -157,7 +157,7 @@ def parseArticle(link, id):
 	store(json_data) 
 	
 def store(data):
-    with open('data.json', 'a') as f:
+    with open('data.json', 'a',encoding='utf-8') as f:
         f.write(data)
 
 def writePageNum(nowPageNum):
@@ -187,7 +187,7 @@ if __name__ == '__main__':
 			writePageNum(nowPageNum+1)
 	else:
 		store('[') 
-		crawler(nowPageNum-10,nowPageNum+1)
+		crawler(nowPageNum-1,nowPageNum+1)
 		store(']') 
 		with open('data.json', 'r') as f:
 			p = f.read()
