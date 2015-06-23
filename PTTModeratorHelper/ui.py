@@ -4,6 +4,7 @@ import tkinter
 from tkinter import ttk
 
 import PTTCrawler
+import mailSender
 import rulechecker
 
 class PttModeratorHelperGui(ttk.Frame):
@@ -13,11 +14,10 @@ class PttModeratorHelperGui(ttk.Frame):
 
         self.result = ""
         self._setup_widgets()
-        self._train_nbc()
 
     def _setup_widgets(self):
         # setup crawl button
-        self.process = ttk.Button(self, text="Process", command=self._crawl)
+        self.process = ttk.Button(self, text="Crawl", command=self._crawl)
         self.process.pack()
 
         # setup entry box
@@ -33,9 +33,6 @@ class PttModeratorHelperGui(ttk.Frame):
         self.send = ttk.Button(self, text="Send Email", command=self._send)
         self.send.pack()
 
-    def _train_nbc(self):
-        print("train nbc!")
-
     def _execute_crawl_and_check(self):
         self._crawl()
         self._check()
@@ -48,7 +45,7 @@ class PttModeratorHelperGui(ttk.Frame):
         self.resultBox.insert("end", self.result)
 
     def _send(self):
-        print("send")
+        mailSender.sendMail(content=self.result)
 
 
 def main():

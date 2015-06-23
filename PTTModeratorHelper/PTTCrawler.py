@@ -157,19 +157,17 @@ def parseArticle(link, id):
     store(json_data) 
     
 def store(data):
-    with open('data.json', 'a') as f:
+    with open('data.json', 'a',encoding='utf-8') as f:
         f.write(data)
 
 def writePageNum(nowPageNum):
     with open('LastPage','w+') as f:
         f.write(str(nowPageNum))
 
-
 def readPageNum():
     with open('LastPage','r') as f:
         k = int(f.read())
     return k
-
 
 def executeCrawl():
     # 回傳現在有幾頁，越新數字越大 7560 -> 7561, 該數字+1為最新之頁數
@@ -181,21 +179,20 @@ def executeCrawl():
             store('[') 
             crawler(last,nowPageNum+1)
             store(']') 
-            with open('data.json', 'r') as f:
+            with open('data.json', 'r', encoding="utf-8") as f:
                 p = f.read()
-            with open('data.json', 'w') as f:
+            with open('data.json', 'w', encoding="utf-8") as f:
                 f.write(p.replace(',]',']'))
             writePageNum(nowPageNum+1)
     else:
         store('[') 
-        crawler(nowPageNum-10,nowPageNum+1)
+        crawler(nowPageNum-1,nowPageNum+1)
         store(']') 
-        with open('data.json', 'r') as f:
+        with open('data.json', 'r', encoding="utf-8") as f:
             p = f.read()
-        with open('data.json', 'w') as f:
+        with open('data.json', 'w', encoding="utf-8") as f:
             f.write(p.replace(',]',']'))
         writePageNum(nowPageNum+1)
 
 
-if __name__ == "__main__":
-    executeCrawl()
+
