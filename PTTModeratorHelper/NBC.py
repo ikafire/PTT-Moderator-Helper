@@ -38,10 +38,10 @@ class NaiveBayesClassifier:
 
     def classify(self, article):
         #Testing
-        self.articleClassifier = Classifier(articleTrainer.data, tokenizer)
-        doc = a.body
+        self.articleClassifier = Classifier(self.articleTrainer.data, tokenizer)
+        doc = article.body
         #seg_list = jieba.lcut(doc, cut_all=False)
         seg_list = jieba.analyse.extract_tags(doc)
         doc = " ".join(seg_list)
-        classification = articleClassifier.classify(doc)
+        classification = self.articleClassifier.classify(doc)
         return classification[0][0]
