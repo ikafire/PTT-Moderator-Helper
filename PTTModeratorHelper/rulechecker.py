@@ -46,6 +46,15 @@ def rule_1(article, users_dict):
             violated = True
     return violated, sentence
 
+def rule_4(article):
+    sentence = "版規四: \n"
+    violated = False
+
+    if NaiveBayesClassifier.classify(article) == 'politics':
+        sentence += "政治問卦。水桶三個月。\n"
+        violated = True
+    return violated, sentence
+
 def rule_6(article):
     sentence = "版規六: \n"
     violated = False
@@ -101,14 +110,17 @@ def main():
         title.check_date(a, prev_date, users_dict)
         title.check_author(a, users_dict)
         violated1, sentence1 = rule_1(a, users_dict)
+        violated4, sentence4 = rule_4(a)
         violated6, sentence6 = rule_6(a)
         violated9, sentence9 = rule_9(a, users_dict)
-        violated = violated1 or violated6 or violated9
+        violated = violated1 or violated4 or violated6 or violated9
         if violated:
             print(a.title)
             #print(a.body)
         if violated1:
             print (sentence1)
+        if violated4:
+            print (sentence4)
         if violated6:
             print(sentence6)
         if violated9:
