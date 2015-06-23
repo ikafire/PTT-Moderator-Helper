@@ -1,13 +1,13 @@
 import smtplib
 from email.mime.text import MIMEText
 
-def sendMail(subject, articleLink, violationList):
+def sendMail(subject, content):
     sender = 'g29298@gmail.com'
     receivers = 'g25259@live.com'
     host = 'smtp.gmail.com'
-    text = ''
+    text = content
     msg = MIMEText(text)
-    msg['Subject'] = 'hello'
+    msg['Subject'] = subject
     msg['From'] = sender
     msg['To'] = receivers
     
@@ -21,7 +21,5 @@ def sendMail(subject, articleLink, violationList):
     except smtplib.SMTPException:
         print "Error: unable to send email"
         return
-
-sendMail('test', 'test', 'test')
 
 
