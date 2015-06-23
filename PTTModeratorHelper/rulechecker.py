@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+import article
 import count
 import title_parse as title
 
@@ -91,12 +93,11 @@ def rule_9(article, users_dict):
 
     return violated, sentence
 
-
-def main():
-    import article
+def checkRules():
     articles = article.create_articles_from_file('data.json')
     users_dict = {}
     prev_date = ""
+    result = ""
     for a in articles:
         title.check_date(a, prev_date, users_dict)
         title.check_author(a, users_dict)
@@ -105,17 +106,16 @@ def main():
         violated9, sentence9 = rule_9(a, users_dict)
         violated = violated1 or violated6 or violated9
         if violated:
-            print(a.title)
-            #print(a.body)
+            result += a.title + "\n"
         if violated1:
-            print (sentence1)
+            result += sentence1 +"\n"
         if violated6:
-            print(sentence6)
+            result += sentence6 + "\n"
         if violated9:
-            print(sentence9)
+            result += sentence9 + "\n"
         if violated:
-            print("==================")
-
+            result += "==========\n"
+    return result
 
 if __name__ == '__main__':
-    main()
+    checkRules()
