@@ -3,7 +3,7 @@
 import tkinter
 from tkinter import ttk
 
-import PTTCrawlerV2
+import PTTCrawler
 import rulechecker
 
 class PttModeratorHelperGui(ttk.Frame):
@@ -11,9 +11,9 @@ class PttModeratorHelperGui(ttk.Frame):
     def __init__(self, master=None):
         ttk.Frame.__init__(self, master)
 
-        # setup binding variable for entry box
-        self.result = tkinter.StringVar(value="result will be shown here.")
+        self.result = ""
         self._setup_widgets()
+        self._train_nbc()
 
     def _setup_widgets(self):
         # setup crawl button
@@ -21,9 +21,8 @@ class PttModeratorHelperGui(ttk.Frame):
         self.process.pack()
 
         # setup entry box
-        self.resultBox = ttk.Label(self, textvar=self.result)
-        self.resultBox.config(
-                width=50, wraplength=400, justify="left")
+        self.resultBox = tkinter.Text(self)
+        self.resultBox.config(width=50)
         self.resultBox.pack(side="bottom", fill="both", expand=1)
 
         # setup check button
@@ -34,19 +33,23 @@ class PttModeratorHelperGui(ttk.Frame):
         self.send = ttk.Button(self, text="Send Email", command=self._send)
         self.send.pack()
 
+    def _train_nbc(self):
+        print("train nbc!")
+
     def _execute_crawl_and_check(self):
         self._crawl()
         self._check()
 
     def _crawl(self):
-        PTTCrawlerV2.executeCrawl()
+        PTTCrawler.executeCrawl()
 
     def _check(self):
-        result = rulechecker.checkRules()
-        self.result.set(result)
+        self.result = rulechecker.checkRules()
+        self.resultBox.insert("end", self.result)
 
     def _send(self):
         print("send")
+
 
 def main():
     root = tkinter.Tk()

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 
 class Article:
     def __init__(self):
@@ -16,7 +17,6 @@ class Article:
 
 def create_articles_from_file(filename):
     f = open(filename, 'r', -1, 'utf-8')
-    import json
     j = json.load(f)
     articles = []
     for entry in j:

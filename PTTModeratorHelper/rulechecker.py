@@ -105,16 +105,22 @@ def checkRules():
         violated6, sentence6 = rule_6(a)
         violated9, sentence9 = rule_9(a, users_dict)
         violated = violated1 or violated6 or violated9
+        subResult = ""
         if violated:
-            result += a.title + "\n"
+            subResult += a.title + "\n"
         if violated1:
-            result += sentence1 +"\n"
+            subResult += sentence1 +"\n"
         if violated6:
-            result += sentence6 + "\n"
+            subResult += sentence6 + "\n"
         if violated9:
-            result += sentence9 + "\n"
+            subResult += sentence9 + "\n"
         if violated:
-            result += "==========\n"
+            subResult += "==========\n"
+            try:
+                print("Detect violation -->", subResult)
+            except:
+                pass
+        result += subResult
     return result
 
 if __name__ == '__main__':
